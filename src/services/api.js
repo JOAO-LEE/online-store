@@ -1,5 +1,7 @@
+// site com as disposições da API do Mercado Livre: https://developers.mercadolivre.com.br/pt_br/categorias-e-publicacoes
+
 export async function getCategories() {
-  // Implemente aqui
+  // site utilizado para pesquisa do endpoint da API: https://api.mercadolibre.com/sites/MLB/categories
   const urlCategoriesApi = 'https://api.mercadolibre.com/sites/MLB/categories';
   try {
     const request = await fetch(urlCategoriesApi);
@@ -11,7 +13,7 @@ export async function getCategories() {
 }
 
 export async function getProductsFromCategoryAndQuery(categoryId, query) {
-  // Implemente aqui! Quando o fizer, descomente os parâmetros que essa função recebe
+  // site utilizado para pesquisa do endpoint da API: https://api.mercadolibre.com/sites/MLB/search?category=category1&q=my-query#json
   const urlProductsApi = 'https://api.mercadolibre.com/sites/MLB/search?category=';
   try {
     const request = await fetch(`${urlProductsApi}${categoryId}&q=${query}`);
