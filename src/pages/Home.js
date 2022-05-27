@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Category from '../components/Category';
 import Products from '../components/Products';
-import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
+import { getProductsFromCategoryAndQuery } from '../services/api';
 
 class Home extends React.Component {
   constructor() {
@@ -10,7 +10,6 @@ class Home extends React.Component {
 
     this.state = {
       queryToSearch: '',
-      categories: [],
       products: [],
     };
   }
@@ -20,7 +19,7 @@ class Home extends React.Component {
     this.setState({ queryToSearch: value });
   }
 
-  handleClick = async (event) => {
+  handleSearchClick = async (event) => {
     event.preventDefault();
     const { queryToSearch } = this.state;
     const searchedProducts = await getProductsFromCategoryAndQuery(null, queryToSearch);
@@ -30,15 +29,18 @@ class Home extends React.Component {
     });
   }
 
-  componentDidMount = async () => {
-    const allCategories = await getCategories();
+  handleRadioClick = async ({ target: { id } }) => {
     this.setState({
-      categories: allCategories,
+      products: [],
+    });
+    const categoryProducts = await getProductsFromCategoryAndQuery(id, null);
+    this.setState({
+      products: categoryProducts.results,
     });
   }
 
   render() {
-    const { queryToSearch, categories, products } = this.state;
+    const { queryToSearch, products } = this.state;
     return (
       <div>
         <div>
@@ -54,10 +56,13 @@ class Home extends React.Component {
           <button
             type="submit"
             data-testid="query-button"
-            onClick={ this.handleClick }
+            onClick={ this.handleSearchClick }
           >
             Pesquisar
           </button>
+          <Category
+            handleRadioClick={ this.handleRadioClick }
+          />
           { (products.length === 0)
             ? (
               <h3 data-testid="home-initial-message">
@@ -81,15 +86,6 @@ class Home extends React.Component {
                 />
               )) }
           </div>
-        </div>
-        <div>
-          {categories.map((category) => (
-            <Category
-              key={ category.id }
-              categoryId={ category.id }
-              categoryName={ category.name }
-            />
-          ))}
         </div>
       </div>
     );
