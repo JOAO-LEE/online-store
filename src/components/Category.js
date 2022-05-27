@@ -1,21 +1,50 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { getCategories } from '../services/api';
 
 class Category extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      categories: [],
+    };
+  }
+
+  componentDidMount = async () => {
+    const allCategories = await getCategories();
+    this.setState({
+      categories: allCategories,
+    });
+  }
+
   render() {
-    const { categoryId, categoryName } = this.props;
+    const { categories } = this.state;
+    const { handleRadioClick } = this.props;
     return (
-      <label htmlFor={ categoryId } data-testid="category">
-        <input type="radio" id={ categoryId } />
-        { categoryName }
-      </label>
+      <fieldset>
+        {categories.map((category) => (
+          <label
+            htmlFor={ category.id }
+            data-testid="category"
+            key={ category.id }
+          >
+            <input
+              type="radio"
+              name="categories"
+              id={ category.id }
+              onChange={ handleRadioClick }
+            />
+            { category.name }
+          </label>
+        ))}
+      </fieldset>
     );
   }
 }
 
 Category.propTypes = {
-  categoryId: PropTypes.string.isRequired,
-  categoryName: PropTypes.string.isRequired,
+  handleRadioClick: PropTypes.func.isRequired,
 };
 
 export default Category;
