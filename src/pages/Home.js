@@ -39,6 +39,10 @@ class Home extends React.Component {
     });
   }
 
+  handleClickCart = (item) => {
+    localStorage.setItem('idProduct', item.id);
+  }
+
   render() {
     const { queryToSearch, products } = this.state;
     return (
@@ -78,13 +82,22 @@ class Home extends React.Component {
             { (products.length === 0)
               ? <p>Nenhum produto foi encontrado</p>
               : products.map((product) => (
-                <Products
-                  key={ product.id }
-                  productName={ product.title }
-                  productImage={ product.thumbnail }
-                  productPrice={ product.price }
-                  productId={ product.id }
-                />
+                <>
+                  <Products
+                    key={ product.id }
+                    productName={ product.title }
+                    productImage={ product.thumbnail }
+                    productPrice={ product.price }
+                    productId={ product.id }
+                  />
+                  <button
+                    type="submit"
+                    data-testid="product-add-to-cart"
+                    onClick={ () => this.handleClickCart(product) }
+                  >
+                    Add To Cart
+                  </button>
+                </>
               )) }
           </div>
         </div>
