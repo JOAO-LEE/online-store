@@ -40,6 +40,7 @@ class Cart extends React.Component {
     return (
       <>
         <h4 data-testid="shopping-cart-product-name">{productOnCart.title}</h4>
+        <img src={ productOnCart.thumbnail } alt={ productOnCart.title } />
         <p>{`R$${productOnCart.price}`}</p>
         <p
           data-testid="shopping-cart-product-quantity"
