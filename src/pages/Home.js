@@ -42,12 +42,12 @@ class Home extends React.Component {
 
   handleLocalStorage = () => {
     const { productsClicked } = this.state;
-    localStorage.setItem('idProduct', productsClicked);
+    localStorage.setItem('idProduct', JSON.stringify(productsClicked));
   }
 
   handleClick = (item) => {
     this.setState((prev) => ({
-      productsClicked: [...prev.productsClicked, item.id],
+      productsClicked: [...prev.productsClicked, item],
     }), this.handleLocalStorage);
   };
 
