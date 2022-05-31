@@ -11,12 +11,8 @@ class Home extends React.Component {
     this.state = {
       queryToSearch: '',
       products: [],
+      productsClicked: [],
     };
-  }
-
-  handleChange = ({ target }) => {
-    const { value } = target;
-    this.setState({ queryToSearch: value });
   }
 
   handleSearchClick = async (event) => {
@@ -29,6 +25,11 @@ class Home extends React.Component {
     });
   }
 
+  handleChange = ({ target }) => {
+    const { value } = target;
+    this.setState({ queryToSearch: value });
+  }
+
   handleRadioClick = async ({ target: { id } }) => {
     this.setState({
       products: [],
@@ -39,9 +40,16 @@ class Home extends React.Component {
     });
   }
 
-  handleClickCart = (item) => {
-    localStorage.setItem('idProduct', item.id);
+  handleLocalStorage = () => {
+    const { productsClicked } = this.state;
+    localStorage.setItem('idProduct', productsClicked);
   }
+
+  handleClick = (item) => {
+    this.setState((prev) => ({
+      productsClicked: [...prev.productsClicked, item.id],
+    }), this.handleLocalStorage);
+  };
 
   render() {
     const { queryToSearch, products } = this.state;
@@ -67,7 +75,7 @@ class Home extends React.Component {
           <Category
             handleRadioClick={ this.handleRadioClick }
           />
-          { (products.length === 0)
+          {(products.length === 0)
             ? (
               <h3 data-testid="home-initial-message">
                 Digite algum termo de pesquisa ou escolha uma categoria.
@@ -79,7 +87,7 @@ class Home extends React.Component {
               </h3>
             )}
           <div>
-            { (products.length === 0)
+            {(products.length === 0)
               ? <p>Nenhum produto foi encontrado</p>
               : products.map((product) => (
                 <>
@@ -93,12 +101,12 @@ class Home extends React.Component {
                   <button
                     type="submit"
                     data-testid="product-add-to-cart"
-                    onClick={ () => this.handleClickCart(product) }
+                    onClick={ () => this.handleClick(product) }
                   >
                     Add To Cart
                   </button>
                 </>
-              )) }
+              ))}
           </div>
         </div>
       </div>

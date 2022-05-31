@@ -4,22 +4,49 @@ import { getProductsFromId } from '../services/api';
 class Cart extends React.Component {
   state = {
     haveItens: false,
-    productOnCart: null,
+    productOnCart: [],
     itensOnCart: 0,
+    isButtonEnable: true,
   }
 
   componentDidMount() {
     this.getItemFromStorage();
   }
 
+  increaseAndDecreaseQuantity = ({ target }) => {
+    if (target.name === 'addToButton') {
+      this.setState((prevState) => ({
+        itensOnCart: prevState.itensOnCart + 1,
+      }), this.isEnable);
+    }
+    if (target.name === 'removeButton') {
+      this.setState((prevState) => ({
+        itensOnCart: prevState.itensOnCart - 1,
+      }), this.isEnable);
+    }
+  }
+
+  isEnable = () => {
+    const { itensOnCart } = this.state;
+    if (itensOnCart <= 1) {
+      this.setState({ isButtonEnable: true });
+    } else {
+      this.setState({ isButtonEnable: false });
+    }
+  }
+
   getItemFromStorage = async () => {
     if (localStorage.getItem('idProduct') !== null) {
       const id = localStorage.getItem('idProduct');
-      const product = await getProductsFromId(id);
-      this.setState({ haveItens: true, productOnCart: product });
-      this.setState((prevState) => ({
-        itensOnCart: prevState.itensOnCart + 1,
-      }));
+      const arrayOfId = id.split(',');
+      arrayOfId.forEach(async (element) => {
+        const product = await getProductsFromId(element);
+        this.setState((prevState) => ({
+          haveItens: true,
+          productOnCart: [...prevState.productOnCart, product],
+        }));
+      });
+      this.setState((prevState) => ({ itensOnCart: prevState.itensOnCart + 1 }));
     } else {
       this.setState({ haveItens: false });
     }
@@ -29,6 +56,7 @@ class Cart extends React.Component {
     const { haveItens,
       productOnCart,
       itensOnCart,
+      isButtonEnable,
     } = this.state;
     if (!haveItens) {
       return (
@@ -38,16 +66,31 @@ class Cart extends React.Component {
       );
     }
     return (
-      <>
-        <h4 data-testid="shopping-cart-product-name">{productOnCart.title}</h4>
-        <img src={ productOnCart.thumbnail } alt={ productOnCart.title } />
-        <p>{`R$${productOnCart.price}`}</p>
-        <p
-          data-testid="shopping-cart-product-quantity"
-        >
-          {`Itens on cart: ${itensOnCart} units`}
-        </p>
-      </>
+      <div>
+        {productOnCart.map((product) => (
+          <>
+            <p data-testid="shopping-cart-product-name">{product.title}</p>
+            <img src={ product.thumbnail } alt={ product.title } />
+            <p>{product.price}</p>
+            <p data-testid="shopping-cart-product-quantity">{itensOnCart}</p>
+            <input
+              disabled={ isButtonEnable }
+              name="removeButton"
+              type="button"
+              value="-"
+              onClick={ this.increaseAndDecreaseQuantity }
+              data-testid="product-decrease-quantity"
+            />
+            <input
+              name="addToButton"
+              type="button"
+              value="+"
+              onClick={ this.increaseAndDecreaseQuantity }
+              data-testid="product-increase-quantity"
+            />
+          </>
+        ))}
+      </div>
     );
   }
 }
